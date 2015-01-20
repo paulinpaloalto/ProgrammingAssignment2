@@ -25,27 +25,30 @@
 ##
 
 makeCacheMatrix <- function(x = matrix()) {
-    ##
-    ## This variable is local to the instantiation of the
-    ## makeCacheMatrix function ("object"), so that it persists
-    ## for the life of that object.
-    ##
-    ## The value is either NULL (indicating that there is no
-    ## value being cached at present) or a valid cached value
-    ## of the current matrix x.
-    ##
+    #
+    # This variable is local to the instantiation of the
+    # makeCacheMatrix function ("object"), so that it persists
+    # for the life of that object.
+    #
+    # The value is either NULL (indicating that there is no
+    # value being cached at present) or a valid cached value
+    # of the current matrix x.
+    #
     cachedInverse <- NULL
     #
     # When a new matrix is set, clear the cached inverse value,
     # which will force the inverse to be recalculated the next
-    # time it is requested.
+    # time cacheSolve is called.
     #
     # The key thing to note here is the use of the assignment
     # operator "<<-", which means that the assignment will not
     # create a local variable in the current function context,
     # but will search upwards to find it in one of the containing
-    # environments. In this case, they will be found in the environment
-    # of the makeCacheMatrix object instantiation.
+    # environments. In this case, it will be found in the environment
+    # of this makeCacheMatrix object. The "x" value that gets
+    # assigned is the original "x" that was passed as an argument
+    # to the makeCacheMatrix call. Parameters are "call by value"
+    # in R and they are stored as local variables.
     #
     set <- function(y) {
         x <<- y
