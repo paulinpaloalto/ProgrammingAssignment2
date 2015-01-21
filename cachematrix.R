@@ -23,6 +23,19 @@
 ##  2) The inverse of the matrix or NULL if the inverse has
 ##     not yet been calculated
 ##
+## Syntax
+##    matObj = makeCacheMatrix(x)
+##
+## Arguments
+##    x - normal R square numeric matrix
+##
+## Return Value
+##   List of 4 functions (the exported "methods"):
+##     set(xMat)
+##     xMat = get()
+##     setInverse(xMatInv)
+##     xMatInv = getInverse()
+##
 
 makeCacheMatrix <- function(x = matrix()) {
     #
@@ -48,32 +61,34 @@ makeCacheMatrix <- function(x = matrix()) {
     # of this makeCacheMatrix object. The "x" value that gets
     # assigned is the original "x" that was passed as an argument
     # to the makeCacheMatrix call. Parameters are "call by value"
-    # in R and they are stored as local variables.
+    # in R and they are stored as local variables in the function's
+    # environment.
     #
-    set <- function(y) {
+    privSet <- function(y) {
         x <<- y
         cachedInverse <<- NULL
     }
     #
     # The get() method just returns the current matrix value
     #
-    get <- function() x
+    privGet <- function() x
     #
     # The setInverse() method sets the cachedInverse value
     #
-    setInverse <- function(inverse) cachedInverse <<- inverse
+    privSetInverse <- function(inverse) cachedInverse <<- inverse
     #
     # Return the current value of cachedInverse from the environment
     #
-    getInverse <- function() cachedInverse
+    privGetInverse <- function() cachedInverse
     #
     # The return value is a list of the "method" functions of the
-    # newly created instance of this object type
+    # newly created instance of this object type. The names on the
+    # left of the "=" are the externally visible names.
     #
-    list(set = set, 
-         get = get, 
-         setInverse = setInverse,
-         getInverse = getInverse)     
+    list(set = privSet, 
+         get = privGet, 
+         setInverse = privSetInverse,
+         getInverse = privGetInverse)
 }
 
 ## 
@@ -87,7 +102,7 @@ makeCacheMatrix <- function(x = matrix()) {
 ##     "..." - additional arguments to pass to solve() if the solution is not cached.
 ##
 ## Return Value
-##     An R matrix that is the inverse of the defining matrix of the object.
+##     An R matrix that is the inverse of the defining matrix of the matrixObject.
 ##     On the first such call to a newly created makeCacheMatrix object, it will
 ##     use the solve() R library function to compute the inverse matrix and then
 ##     store it in the matrix object using the setInverse() method.
@@ -108,7 +123,7 @@ cacheSolve <- function(x, ...) {
     #
     xInverse <- x$getInverse()
     if(!is.null(xInverse)) {
-        message("returning cached value for Inverse")
+        message("Returning cached value for Inverse")
         return(xInverse)
     }
     #
